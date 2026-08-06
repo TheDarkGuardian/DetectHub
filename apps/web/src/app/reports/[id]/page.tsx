@@ -23,11 +23,21 @@ export default function ReportDetailPage() {
   const [report, setReport] = useState<ForensicReport | null>(null);
 
   useEffect(() => {
+    if (!reportId) return;
     fetch(`/api/v1/reports/${reportId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.report) {
           setReport(data.report);
+        } else {
+          // Fallback to first available report
+          fetch('/api/v1/reports')
+            .then(res => res.json())
+            .then(d => {
+              if (d.success && d.reports && d.reports.length > 0) {
+                setReport(d.reports[0]);
+              }
+            });
         }
       })
       .catch(() => null);
@@ -36,7 +46,15 @@ export default function ReportDetailPage() {
   if (!report) {
     return (
       <DashboardShell>
-        <div className="p-8 text-center text-xs font-mono text-zinc-400">Loading Forensic Telemetry...</div>
+        <div className="p-12 text-center text-xs font-mono text-zinc-400 space-y-3">
+          <div>Loading Forensic Telemetry payload for {reportId}...</div>
+          <button
+            onClick={() => router.push('/reports')}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#27272A] bg-[#18181B] px-3 py-1.5 text-xs text-zinc-200 hover:bg-[#27272A]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Reports List
+          </button>
+        </div>
       </DashboardShell>
     );
   }
