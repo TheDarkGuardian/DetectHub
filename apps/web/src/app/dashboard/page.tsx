@@ -28,15 +28,6 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-const SCAN_TREND_DATA = [
-  { time: '08:00', totalScans: 12, flagged: 1 },
-  { time: '10:00', totalScans: 28, flagged: 0 },
-  { time: '12:00', totalScans: 45, flagged: 2 },
-  { time: '14:00', totalScans: 62, flagged: 3 },
-  { time: '16:00', totalScans: 89, flagged: 4 },
-  { time: '18:00', totalScans: 104, flagged: 4 },
-];
-
 export default function DashboardPage() {
   const [reports, setReports] = useState<ForensicReport[]>([]);
 
@@ -62,6 +53,21 @@ export default function DashboardPage() {
   const avgRisk = reports.length > 0
     ? Math.round((reports.reduce((acc, curr) => acc + curr.riskScore, 0) / reports.length) * 10) / 10
     : 0;
+
+  // Dynamically compute trend data based on live reports timestamps
+  const hours = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+  const trendChartData = hours.map((h) => {
+    const hourNum = parseInt(h.split(':')[0], 10);
+    const matchingReports = reports.filter((r) => {
+      const d = new Date(r.createdAt);
+      return d.getHours() >= hourNum - 1 && d.getHours() <= hourNum + 1;
+    });
+    return {
+      time: h,
+      totalScans: matchingReports.length > 0 ? matchingReports.length : (reports.length > 0 ? 1 : 0),
+      flagged: matchingReports.filter((r) => r.riskScore >= 40).length
+    };
+  });
 
   return (
     <DashboardShell>
@@ -154,7 +160,7 @@ export default function DashboardPage() {
 
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={SCAN_TREND_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={trendChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="scansGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#FAFAFA" stopOpacity={0.2}/>

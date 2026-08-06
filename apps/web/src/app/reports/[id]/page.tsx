@@ -59,6 +59,10 @@ export default function ReportDetailPage() {
     );
   }
 
+  const handleExportPdf = () => {
+    window.print();
+  };
+
   return (
     <DashboardShell>
       {/* Top Action & Navigation */}
@@ -82,11 +86,17 @@ export default function ReportDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 rounded-lg border border-[#1F1F24] bg-[#0F0F12] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-[#141418]">
+          <button
+            onClick={() => navigator.clipboard.writeText(report.id)}
+            className="flex items-center gap-1.5 rounded-lg border border-[#1F1F24] bg-[#0F0F12] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-[#141418]"
+          >
             <Share2 className="h-3.5 w-3.5" />
             <span>Share Report Token</span>
           </button>
-          <button className="flex items-center gap-1.5 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors">
+          <button
+            onClick={handleExportPdf}
+            className="flex items-center gap-1.5 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors"
+          >
             <Download className="h-3.5 w-3.5" />
             <span>Export PDF Payload</span>
           </button>
