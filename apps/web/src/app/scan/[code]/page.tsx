@@ -32,11 +32,11 @@ export default function PublicScanPage() {
 
   const handleDownload = () => {
     setDownloadStarted(true);
-    // Trigger real valid ZIP file download from backend API endpoint
+    // Trigger real native desktop app installer download from backend API endpoint
     const downloadUrl = `/api/v1/download/agent?os=${detectedOs}`;
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = detectedOs === 'mac' ? 'DetectHub-Agent-v2.4.0-macOS.zip' : 'DetectHub-Agent-v2.4.0-Windows.zip';
+    link.download = detectedOs === 'mac' ? 'DetectHub-Agent-v2.4.0.dmg' : 'DetectHub-Agent-v2.4.0-Setup.exe';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -104,12 +104,12 @@ export default function PublicScanPage() {
           >
             <Download className="h-5 w-5" />
             <span>
-              Download DetectHub Agent for {detectedOs === 'mac' ? 'macOS (.zip)' : 'Windows (.zip)'}
+              Download DetectHub Desktop Agent for {detectedOs === 'mac' ? 'macOS (.dmg App Bundle)' : 'Windows (.exe Setup Installer)'}
             </span>
           </button>
 
           <div className="text-center text-[11px] text-zinc-500 font-mono">
-            Version 2.4.0 • ZIP Package • Code Signed SHA-256
+            Version 2.4.0 • Desktop Application Package • Code Signed SHA-256
           </div>
         </div>
 
