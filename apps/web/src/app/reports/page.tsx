@@ -1,18 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { RiskGauge } from '@/components/ui/RiskGauge';
-import { MOCK_REPORTS } from '@/lib/mockData';
-import { Search, Filter, ArrowUpRight, ShieldAlert, FileText, CheckCircle2 } from 'lucide-react';
+import { ForensicReport } from '@/types/forensics';
+import { Search, Filter, ArrowUpRight } from 'lucide-react';
 
 export default function ReportsListPage() {
+  const [reports, setReports] = useState<ForensicReport[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
-  const filteredReports = MOCK_REPORTS.filter((r) => {
+  const fetchReports = async () => {
+    try {
+      const res = await fetch('/api/v1/reports');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.reports)) {
+        setReports(data.reports);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const filteredReports = reports.filter((r) => {
     const matchesQuery =
       r.targetUsername.toLowerCase().includes(search.toLowerCase()) ||
       r.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -26,11 +43,10 @@ export default function ReportsListPage() {
     <DashboardShell>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono">Forensic Reports</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white font-mono">Live Forensic Reports</h1>
           <p className="text-xs text-zinc-400 mt-1">Audit trail of computer integrity scans and user risk reports</p>
         </div>
 
-        {/* Search & Filter */}
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
@@ -49,9 +65,8 @@ export default function ReportsListPage() {
             className="h-9 rounded-lg border border-[#1F1F24] bg-[#0F0F12] px-3 text-xs font-mono text-zinc-300 outline-none"
           >
             <option value="ALL">All Statuses</option>
-            <option value="FLAGGED font-bold">FLAGGED</option>
+            <option value="FLAGGED">FLAGGED</option>
             <option value="COMPLETED">COMPLETED</option>
-            <option value="PENDING">PENDING</option>
           </select>
         </div>
       </div>
@@ -66,7 +81,7 @@ export default function ReportsListPage() {
                 <th className="py-3 px-3">PC Hostname</th>
                 <th className="py-3 px-3">Risk Score</th>
                 <th className="py-3 px-3">Status</th>
-                <th className="py-3 px-3">Date</th>
+                <th className="py-3 px-3">Created</th>
                 <th className="py-3 px-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -85,7 +100,7 @@ export default function ReportsListPage() {
                   <td className="py-3 px-3">
                     <StatusBadge status={report.status} severity={report.severity} />
                   </td>
-                  <td className="py-3 px-3 font-mono text-[11px] text-zinc-400">{new Date(report.createdAt).toLocaleDateString()}</td>
+                  <td className="py-3 px-3 font-mono text-[11px] text-zinc-400">{new Date(report.createdAt).toLocaleString()}</td>
                   <td className="py-3 px-3 text-right">
                     <Link
                       href={`/reports/${report.id}`}

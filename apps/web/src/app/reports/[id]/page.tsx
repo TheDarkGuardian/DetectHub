@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { RiskGauge } from '@/components/ui/RiskGauge';
@@ -8,29 +8,38 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { AIAssistantCard } from '@/components/reports/AIAssistantCard';
 import { ArtifactTable } from '@/components/reports/ArtifactTable';
 import { ForensicTimeline } from '@/components/timeline/ForensicTimeline';
-import { MOCK_REPORTS } from '@/lib/mockData';
+import { ForensicReport } from '@/types/forensics';
 import {
-  ShieldAlert,
   ArrowLeft,
   Download,
   Share2,
-  Lock,
-  Cpu,
-  Monitor,
-  CheckCircle,
-  FileCode,
-  HardDrive,
-  Usb,
-  Clock,
-  ExternalLink
+  Monitor
 } from 'lucide-react';
 
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
   const reportId = params.id as string;
+  const [report, setReport] = useState<ForensicReport | null>(null);
 
-  const report = MOCK_REPORTS.find((r) => r.id === reportId) || MOCK_REPORTS[0];
+  useEffect(() => {
+    fetch(`/api/v1/reports/${reportId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.report) {
+          setReport(data.report);
+        }
+      })
+      .catch(() => null);
+  }, [reportId]);
+
+  if (!report) {
+    return (
+      <DashboardShell>
+        <div className="p-8 text-center text-xs font-mono text-zinc-400">Loading Forensic Telemetry...</div>
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell>
@@ -68,13 +77,12 @@ export default function ReportDetailPage() {
 
       {/* Top Banner: Risk Gauge & System Hardware Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Risk Score Gauge */}
         <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-5 shadow-card space-y-4">
           <RiskGauge score={report.riskScore} severity={report.severity} size="lg" showLabel={true} />
 
           <div className="pt-2 border-t border-[#1F1F24] space-y-2 text-xs font-mono">
             <div className="text-[10px] text-zinc-500 uppercase font-semibold">Configured Risk Score Deductions</div>
-            {report.triggeredRules.length > 0 ? (
+            {report.triggeredRules && report.triggeredRules.length > 0 ? (
               report.triggeredRules.map((rule, idx) => (
                 <div key={idx} className="flex items-center justify-between text-zinc-300 border-b border-[#1F1F24] pb-1.5 last:border-0 last:pb-0">
                   <span className="truncate max-w-[200px]">{rule.ruleName}</span>
@@ -87,7 +95,6 @@ export default function ReportDetailPage() {
           </div>
         </div>
 
-        {/* Right: Endpoint Hardware & OS Details */}
         <div className="lg:col-span-2 rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between border-b border-[#1F1F24] pb-3">
             <div className="flex items-center gap-2">
@@ -116,7 +123,6 @@ export default function ReportDetailPage() {
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
           <div className="grid grid-cols-4 gap-2 pt-2 border-t border-[#1F1F24] text-center font-mono">
             <div className="rounded bg-[#09090B] p-2 border border-[#1F1F24]">
               <span className="text-[10px] text-zinc-500 uppercase">Total Artifacts</span>
@@ -138,13 +144,8 @@ export default function ReportDetailPage() {
         </div>
       </div>
 
-      {/* AI Forensic Analysis Section */}
       <AIAssistantCard report={report} />
-
-      {/* Interactive Forensic Chronology Timeline */}
-      <ForensicTimeline timeline={report.timeline} />
-
-      {/* Comprehensive 25+ Category Artifact Explorer Table */}
+      <ForensicTimeline timeline={report.timeline || []} />
       <ArtifactTable report={report} />
     </DashboardShell>
   );

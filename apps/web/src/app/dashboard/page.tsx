@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { RiskGauge } from '@/components/ui/RiskGauge';
-import { MOCK_REPORTS } from '@/lib/mockData';
+import { ForensicReport } from '@/types/forensics';
 import Link from 'next/link';
 import {
   Activity,
@@ -38,6 +38,31 @@ const SCAN_TREND_DATA = [
 ];
 
 export default function DashboardPage() {
+  const [reports, setReports] = useState<ForensicReport[]>([]);
+
+  const fetchReports = async () => {
+    try {
+      const res = await fetch('/api/v1/reports');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.reports)) {
+        setReports(data.reports);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+    const interval = setInterval(fetchReports, 3000); // Live poll for desktop agent uploads
+    return () => clearInterval(interval);
+  }, []);
+
+  const flaggedCount = reports.filter((r) => r.riskScore >= 40 || r.status === 'FLAGGED').length;
+  const avgRisk = reports.length > 0
+    ? Math.round((reports.reduce((acc, curr) => acc + curr.riskScore, 0) / reports.length) * 10) / 10
+    : 0;
+
   return (
     <DashboardShell>
       {/* Header Title Section */}
@@ -50,7 +75,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-950/40 px-3 py-1 text-xs font-mono text-emerald-400">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            System Live
+            Live Engine Active ({reports.length} Reports)
           </span>
         </div>
       </div>
@@ -59,12 +84,12 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-4 space-y-2 hover:border-zinc-700 transition-card">
           <div className="flex items-center justify-between text-zinc-400 text-xs font-mono">
-            <span>Today's Scans</span>
+            <span>Total Scans</span>
             <Activity className="h-4 w-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white">104</div>
+          <div className="text-2xl font-bold font-mono text-white">{reports.length}</div>
           <div className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" /> +18.4% vs yesterday
+            <TrendingUp className="h-3 w-3" /> Live Indexed
           </div>
         </div>
 
@@ -73,7 +98,9 @@ export default function DashboardPage() {
             <span>Pending Reviews</span>
             <Clock className="h-4 w-4 text-amber-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-amber-400">5</div>
+          <div className="text-2xl font-bold font-mono text-amber-400">
+            {reports.filter(r => r.riskScore >= 20 && r.riskScore < 40).length}
+          </div>
           <div className="text-[11px] text-zinc-500 font-mono">Requires analyst sign-off</div>
         </div>
 
@@ -82,7 +109,7 @@ export default function DashboardPage() {
             <span>Flagged Reports</span>
             <ShieldAlert className="h-4 w-4 text-rose-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-rose-400">4</div>
+          <div className="text-2xl font-bold font-mono text-rose-400">{flaggedCount}</div>
           <div className="text-[11px] text-rose-400 font-mono">Unsigned drivers / memory injection</div>
         </div>
 
@@ -91,8 +118,8 @@ export default function DashboardPage() {
             <span>Average Risk Score</span>
             <CheckCircle className="h-4 w-4 text-blue-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white">24.2</div>
-          <div className="text-[11px] text-emerald-400 font-mono">Normative baseline</div>
+          <div className="text-2xl font-bold font-mono text-white">{avgRisk}</div>
+          <div className="text-[11px] text-emerald-400 font-mono">Calculated Mean</div>
         </div>
 
         <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-4 space-y-2 hover:border-zinc-700 transition-card">
@@ -100,8 +127,8 @@ export default function DashboardPage() {
             <span>Active Orgs</span>
             <Building2 className="h-4 w-4 text-zinc-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white">12</div>
-          <div className="text-[11px] text-zinc-500 font-mono">3 Premier Leagues</div>
+          <div className="text-2xl font-bold font-mono text-white">3</div>
+          <div className="text-[11px] text-zinc-500 font-mono">Fnatic Esports Club</div>
         </div>
 
         <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-4 space-y-2 hover:border-zinc-700 transition-card">
@@ -109,21 +136,20 @@ export default function DashboardPage() {
             <span>Recent Uploads</span>
             <FileText className="h-4 w-4 text-zinc-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white">1,482</div>
-          <div className="text-[11px] text-zinc-500 font-mono">Encrypted report payloads</div>
+          <div className="text-2xl font-bold font-mono text-white">{reports.length}</div>
+          <div className="text-[11px] text-zinc-500 font-mono">Encrypted payloads</div>
         </div>
       </div>
 
       {/* Main Charts & Live Feed Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Trend Area Chart (2 cols) */}
         <div className="lg:col-span-2 rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-semibold text-white font-mono">Scan Volume & Flagged Anomalies</h3>
               <p className="text-xs text-zinc-400">Intraday 24-hour forensic telemetry frequency</p>
             </div>
-            <span className="text-[11px] font-mono text-zinc-500">Updated 1 minute ago</span>
+            <span className="text-[11px] font-mono text-zinc-500">Live API Data Sync</span>
           </div>
 
           <div className="h-64 w-full">
@@ -151,7 +177,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Live Events Stream */}
         <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between border-b border-[#1F1F24] pb-3">
             <h3 className="text-sm font-semibold text-white font-mono flex items-center gap-2">
@@ -162,14 +187,14 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
-            {MOCK_REPORTS[0].timeline.slice(0, 5).map((evt) => (
-              <div key={evt.id} className="rounded-lg border border-[#1F1F24] bg-[#09090B] p-3 text-xs space-y-1">
+            {reports.slice(0, 5).map((r) => (
+              <div key={r.id} className="rounded-lg border border-[#1F1F24] bg-[#09090B] p-3 text-xs space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-zinc-400 font-bold">{evt.timeFormatted}</span>
-                  <StatusBadge severity={evt.severity} />
+                  <span className="font-mono text-zinc-400 font-bold">{r.id}</span>
+                  <StatusBadge severity={r.severity} />
                 </div>
-                <div className="font-semibold text-zinc-200">{evt.title}</div>
-                <div className="text-[11px] text-zinc-400">{evt.description}</div>
+                <div className="font-semibold text-zinc-200">{r.targetUsername} ({r.pcName})</div>
+                <div className="text-[11px] text-zinc-400 truncate">{r.aiSummary}</div>
               </div>
             ))}
           </div>
@@ -180,7 +205,7 @@ export default function DashboardPage() {
       <div className="rounded-xl border border-[#1F1F24] bg-[#0F0F12] p-5 shadow-card space-y-4">
         <div className="flex items-center justify-between border-b border-[#1F1F24] pb-3">
           <div>
-            <h3 className="text-sm font-semibold text-white font-mono">Recent Uploaded Reports</h3>
+            <h3 className="text-sm font-semibold text-white font-mono">Live Indexed Forensic Reports</h3>
             <p className="text-xs text-zinc-400">Cryptographically signed user computer integrity inspects</p>
           </div>
           <Link
@@ -206,7 +231,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1F1F24]">
-              {MOCK_REPORTS.map((report) => (
+              {reports.map((report) => (
                 <tr key={report.id} className="hover:bg-[#141418] transition-colors">
                   <td className="py-3 px-3 font-mono font-bold text-zinc-300">{report.id}</td>
                   <td className="py-3 px-3">
