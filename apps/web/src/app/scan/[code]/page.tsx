@@ -108,6 +108,12 @@ export default function PublicScanPage() {
             </span>
           </button>
 
+          {detectedOs === 'mac' && (
+            <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5 text-[11px] text-amber-300 font-mono text-center">
+              💡 <strong>Mac Kullanıcıları İçin İpucu:</strong> İndirilen uygulamaya ilk kez tıklarken <u>Sağ Tıklayıp &gt; Aç (Right Click &gt; Open)</u> seçeneğini kullanın.
+            </div>
+          )}
+
           <div className="text-center text-[11px] text-zinc-500 font-mono">
             Version 2.4.0 • Desktop Application Package • Code Signed SHA-256
           </div>
