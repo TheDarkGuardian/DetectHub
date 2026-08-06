@@ -3,9 +3,10 @@ import { db } from '@/lib/db';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const report = db.getReportById(params.id);
+  const { id } = await params;
+  const report = db.getReportById(id);
   if (!report) {
     return NextResponse.json({ success: false, error: 'Report not found' }, { status: 404 });
   }

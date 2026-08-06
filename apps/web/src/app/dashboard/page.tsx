@@ -231,32 +231,41 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1F1F24]">
-              {reports.map((report) => (
-                <tr key={report.id} className="hover:bg-[#141418] transition-colors">
-                  <td className="py-3 px-3 font-mono font-bold text-zinc-300">{report.id}</td>
-                  <td className="py-3 px-3">
-                    <div className="font-semibold text-white">{report.targetUsername}</div>
-                    <div className="text-[10px] text-zinc-500 font-mono">{report.targetDiscord}</div>
-                  </td>
-                  <td className="py-3 px-3 font-mono text-zinc-400">{report.pcName}</td>
-                  <td className="py-3 px-3">
-                    <RiskGauge score={report.riskScore} severity={report.severity} size="sm" showLabel={false} />
-                  </td>
-                  <td className="py-3 px-3">
-                    <StatusBadge status={report.status} severity={report.severity} />
-                  </td>
-                  <td className="py-3 px-3 font-mono text-[11px] text-zinc-400">{report.osVersion}</td>
-                  <td className="py-3 px-3 text-right">
-                    <Link
-                      href={`/reports/${report.id}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-[#27272A] bg-[#18181B] px-2.5 py-1 text-[11px] font-medium text-zinc-200 hover:bg-[#27272A]"
-                    >
-                      <span>Inspect</span>
-                      <ArrowUpRight className="h-3 w-3" />
-                    </Link>
+              {reports.length > 0 ? (
+                reports.map((report) => (
+                  <tr key={report.id} className="hover:bg-[#141418] transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-zinc-300">{report.id}</td>
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-white">{report.targetUsername}</div>
+                      <div className="text-[10px] text-zinc-500 font-mono">{report.targetDiscord}</div>
+                    </td>
+                    <td className="py-3 px-3 font-mono text-zinc-400">{report.pcName}</td>
+                    <td className="py-3 px-3">
+                      <RiskGauge score={report.riskScore} severity={report.severity} size="sm" showLabel={false} />
+                    </td>
+                    <td className="py-3 px-3">
+                      <StatusBadge status={report.status} severity={report.severity} />
+                    </td>
+                    <td className="py-3 px-3 font-mono text-[11px] text-zinc-400">{report.osVersion}</td>
+                    <td className="py-3 px-3 text-right">
+                      <Link
+                        href={`/reports/${report.id}`}
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#27272A] bg-[#18181B] px-2.5 py-1 text-[11px] font-medium text-zinc-200 hover:bg-[#27272A]"
+                      >
+                        <span>Inspect</span>
+                        <ArrowUpRight className="h-3 w-3" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-xs font-mono text-zinc-500 space-y-2">
+                    <p className="text-zinc-300 font-bold">No Forensic Telemetry Reports Uploaded Yet</p>
+                    <p>Click "New Scan Request" at the top right to issue an invite link and begin a live PC check.</p>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
