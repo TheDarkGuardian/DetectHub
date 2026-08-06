@@ -109,8 +109,13 @@ export default function PublicScanPage() {
           </button>
 
           {detectedOs === 'mac' && (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5 text-[11px] text-amber-300 font-mono text-center">
-              💡 <strong>Mac Kullanıcıları İçin İpucu:</strong> İndirilen uygulamaya ilk kez tıklarken <u>Sağ Tıklayıp &gt; Aç (Right Click &gt; Open)</u> seçeneğini kullanın.
+            <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 text-xs text-amber-200 font-mono space-y-2 text-left">
+              <div className="font-bold flex items-center gap-1.5 text-amber-400">
+                <span>💡 Mac Kullanıcıları İçin Güvenlik İzni (1 Kezlik Adım):</span>
+              </div>
+              <p className="text-[11px] text-zinc-300 leading-relaxed">
+                Mac bilgisayarınızda uyarı alırsanız <strong>Sistem Ayarları &gt; Gizlilik ve Güvenlik (System Settings &gt; Privacy &amp; Security)</strong> menüsüne gidin ve en alttaki <u className="text-white font-bold font-mono">"Yine de Aç" (Open Anyway)</u> butonuna tıklayın.
+              </p>
             </div>
           )}
 
