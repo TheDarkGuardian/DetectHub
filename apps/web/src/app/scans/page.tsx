@@ -29,8 +29,8 @@ export default function ScansPage() {
   }, []);
 
   const handleCopyLink = (code: string, id: string) => {
-    const downloadLink = `${window.location.origin}/downloads?code=${code}`;
-    navigator.clipboard.writeText(downloadLink);
+    const inviteLink = `${window.location.origin}/scan/${code}`;
+    navigator.clipboard.writeText(inviteLink);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -55,8 +55,8 @@ export default function ScansPage() {
     <DashboardShell>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono">Scan Requests & Unique Download Links</h1>
-          <p className="text-xs text-zinc-400 mt-1">Issue unique scan invites with auto OS detection links and real-time desktop agent pairing</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white font-mono">Scan Requests & Target Invite Links</h1>
+          <p className="text-xs text-zinc-400 mt-1">Issue unique scan links. When opened by the player, their OS is automatically detected and pairing code pre-filled.</p>
         </div>
 
         <button
@@ -64,7 +64,7 @@ export default function ScansPage() {
           className="flex items-center gap-1.5 rounded-lg bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors"
         >
           <Plus className="h-4 w-4" />
-          <span>New Unique Scan Link</span>
+          <span>New Target Invite Link</span>
         </button>
       </div>
 
@@ -97,7 +97,7 @@ export default function ScansPage() {
                       className="inline-flex items-center gap-1.5 rounded-lg border border-[#27272A] bg-[#18181B] px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-[#27272A] transition-colors"
                     >
                       {copiedId === scan.id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                      <span>{copiedId === scan.id ? 'Link Copied!' : 'Copy Unique Download Link'}</span>
+                      <span>{copiedId === scan.id ? 'Link Copied!' : 'Copy Target Link'}</span>
                     </button>
                   </td>
                 </tr>
