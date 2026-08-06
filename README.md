@@ -14,6 +14,33 @@
 
 ---
 
+## 🚦 Project Status & Progress (Proje Durumu ve Gelişim Özeti)
+
+### ✅ Tamamlanan Özellikler (Completed Features)
+
+- [x] **Next.js 15 Web SaaS Dashboard & Adli İnceleme Paneli (`apps/web`)**: Pure Black (`#09090B`) Linear/Vercel/Raycast karanlık tema tasarımı, canlı arama, bildirim paneli ve modüler sayfa yönlendirmeleri.
+- [x] **Tauri v2 + Rust Masaüstü Tarama Ajanı (`apps/agent`)**: Windows & macOS için modüler adli tarama motoru (`system.rs`, `process.rs`, `driver.rs`, `registry.rs`, `usb.rs`, `eventlog.rs`, `network.rs`, `defender.rs`).
+- [x] **Hedef Kullanıcı Kamu İndirme Portalı (`/scan/[code]`)**: Davet linkine giren oyuncunun işletim sistemini (Windows vs macOS) otomatik algılayıp eşleştirme kodunu ekrana getiren ve indirme sunan kamu portalı.
+- [x] **Yerel İşletim Sistemi İndirme Paketleri (.dmg & .exe)**: macOS için yerel Apple `hdiutil` ile üretilmiş `.dmg` imajı (`DetectHub-Agent.app`) ve Windows için `.exe` masaüstü kurulum paketi.
+- [x] **App Translocation & CORS Bypass Yerel HTTP Sunucu Motoru**: Mac ortamında DMG üzerinden çalıştırıldığında `file://` CORS ve App Translocation engellerini aşan yerel `http://localhost:1420` başlatıcı servisi.
+- [x] **Canlı Sistem Telemetri Toplayıcısı (`realScanner.ts`)**: Taranan bilgisayarın gerçek OS sürümünü (macOS Sonoma / Windows 11), gerçek CPU çekirdeklerini, bellek miktarını ve aktif çalışan canlı süreçlerini okuyan adli motor.
+- [x] **Canlı Web SaaS Entegrasyonu & API Yükleme Servisi (`/api/v1/scan/upload`)**: Masaüstü ajanı tarama yaptığı saniye verinin CORS preflight ile Web SaaS paneline canlı düşmesi ve otomatik indekslenmesi.
+- [x] **Dinamik 24 Saatlik Dashboard Trend Grafiği**: `/dashboard` üzerindeki tarama hacmi ve bayraklanan anomali grafiğinin canlı veritabanı zaman damgalarına göre anlık hesaplanması.
+- [x] **Adli Rapor Çıktısı ("Export PDF Payload")**: `/reports/[id]` adli rapor detay sayfasında basılabilir PDF payload çıktısı oluşturma yeteneği.
+- [x] **Otomatik Risk Skoru & DetectAI Analist Motoru**: İmzasız sürücü (+40), bellek modifikasyonu (+80), Defender kapatılması (+50) ve VM tespiti (+35) kurallarına göre 0-100 risk puanlama ve doğal dilde yönetici özeti.
+
+---
+
+### 🚀 Gelecek Yol Haritası / Yapılacaklar (Future Production Roadmap)
+
+- [ ] **Production PostgreSQL / Supabase Veritabanı Bağlantısı**: Prisma ORM ile `DATABASE_URL` kalıcı canlı veritabanı sürücüsü entegrasyonu.
+- [ ] **Dinamik API Sunucu URL Yapılandırması**: Canlı domaine geçişte `NEXT_PUBLIC_API_URL` çevre değişkeni yönetimi ve Masaüstü Ajanı canlı sunucu IP/Domain yapılandırması.
+- [ ] **Üretim Sürümü Bulut Paket Dağıtımı**: İndirme dosyalarının Cloudflare R2 / AWS S3 veya GitHub Releases üzerinden yüksek indirme hızıyla sunulması.
+- [ ] **Kurumlar ve Bilgisayarlar Sayfalarının Canlı Veritabanı Bağlantıları**: `/organizations` ve `/computers` modüllerinin doğrudan DB nesnelerine bağlanması.
+- [ ] **Apple Developer ID & Microsoft Code Signing Sertifikasyon Süreçleri**: Canlı dağıtımda Gatekeeper ve SmartScreen uyarılarını tamamen ortadan kaldıracak dijital Kod İmzalama (Code Signing) sertifikasyonu.
+
+---
+
 ## 📸 Architecture Overview
 
 ```mermaid
@@ -44,7 +71,7 @@ graph TD
 
 ## 🔥 Key Products & Applications
 
-### 1. DetectHub Agent (Windows Desktop)
+### 1. DetectHub Agent (Windows & macOS Desktop)
 - **Tech Stack**: Tauri v2, Rust 2021, React 19, TypeScript, Tailwind CSS, shadcn/ui.
 - **Features**:
   - One-time scan token & invite pairing (`DETECT-8921-X992`).
@@ -56,7 +83,7 @@ graph TD
 - **Tech Stack**: Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Prisma, Recharts.
 - **Design System**: Linear/Vercel/Raycast pure dark mode aesthetic (`#09090B`), status-only accents (`#22C55E` Safe, `#EAB308` Review, `#EF4444` Critical, `#3B82F6` Info), keyboard command palette (`Cmd+K`).
 - **Features**:
-  - **Forensic Dashboard (`/dashboard`)**: Scan volume KPIs, live security event stream, trend graphs.
+  - **Forensic Dashboard (`/dashboard`)**: Scan volume KPIs, live security event stream, dynamic intraday trend graphs.
   - **Single Report Inspector (`/reports/[id]`)**: Risk Score Gauge, DetectAI Analyst Q&A, Interactive Chronology Timeline, 25+ Category Artifact Explorer with raw JSON modal.
   - **Configurable Risk Engine (`/rules`)**: Admin weight editor for custom detection rules.
   - **Scan Requests (`/scans`)**: One-time invite tokens, permanent URLs, QR code access credentials.
