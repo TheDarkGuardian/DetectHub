@@ -14,30 +14,30 @@
 
 ---
 
-## 🚦 Project Status & Progress (Proje Durumu ve Gelişim Özeti)
+## 🚦 Project Status & Development Roadmap
 
-### ✅ Tamamlanan Özellikler (Completed Features)
+### ✅ Completed Features
 
-- [x] **Next.js 15 Web SaaS Dashboard & Adli İnceleme Paneli (`apps/web`)**: Pure Black (`#09090B`) Linear/Vercel/Raycast karanlık tema tasarımı, canlı arama, bildirim paneli ve modüler sayfa yönlendirmeleri.
-- [x] **Tauri v2 + Rust Masaüstü Tarama Ajanı (`apps/agent`)**: Windows & macOS için modüler adli tarama motoru (`system.rs`, `process.rs`, `driver.rs`, `registry.rs`, `usb.rs`, `eventlog.rs`, `network.rs`, `defender.rs`).
-- [x] **Hedef Kullanıcı Kamu İndirme Portalı (`/scan/[code]`)**: Davet linkine giren oyuncunun işletim sistemini (Windows vs macOS) otomatik algılayıp eşleştirme kodunu ekrana getiren ve indirme sunan kamu portalı.
-- [x] **Yerel İşletim Sistemi İndirme Paketleri (.dmg & .exe)**: macOS için yerel Apple `hdiutil` ile üretilmiş `.dmg` imajı (`DetectHub-Agent.app`) ve Windows için `.exe` masaüstü kurulum paketi.
-- [x] **App Translocation & CORS Bypass Yerel HTTP Sunucu Motoru**: Mac ortamında DMG üzerinden çalıştırıldığında `file://` CORS ve App Translocation engellerini aşan yerel `http://localhost:1420` başlatıcı servisi.
-- [x] **Canlı Sistem Telemetri Toplayıcısı (`realScanner.ts`)**: Taranan bilgisayarın gerçek OS sürümünü (macOS Sonoma / Windows 11), gerçek CPU çekirdeklerini, bellek miktarını ve aktif çalışan canlı süreçlerini okuyan adli motor.
-- [x] **Canlı Web SaaS Entegrasyonu & API Yükleme Servisi (`/api/v1/scan/upload`)**: Masaüstü ajanı tarama yaptığı saniye verinin CORS preflight ile Web SaaS paneline canlı düşmesi ve otomatik indekslenmesi.
-- [x] **Dinamik 24 Saatlik Dashboard Trend Grafiği**: `/dashboard` üzerindeki tarama hacmi ve bayraklanan anomali grafiğinin canlı veritabanı zaman damgalarına göre anlık hesaplanması.
-- [x] **Adli Rapor Çıktısı ("Export PDF Payload")**: `/reports/[id]` adli rapor detay sayfasında basılabilir PDF payload çıktısı oluşturma yeteneği.
-- [x] **Otomatik Risk Skoru & DetectAI Analist Motoru**: İmzasız sürücü (+40), bellek modifikasyonu (+80), Defender kapatılması (+50) ve VM tespiti (+35) kurallarına göre 0-100 risk puanlama ve doğal dilde yönetici özeti.
+- [x] **Next.js 15 Web SaaS Dashboard & Forensic Inspector (`apps/web`)**: Pure Black (`#09090B`) Linear/Vercel/Raycast dark theme design system, live search, notification panels, and modular page routing.
+- [x] **Tauri v2 + Rust Desktop Scanning Agent (`apps/agent`)**: Modular forensic inspection engine for Windows & macOS (`system.rs`, `process.rs`, `driver.rs`, `registry.rs`, `usb.rs`, `eventlog.rs`, `network.rs`, `defender.rs`).
+- [x] **Public Target User Onboarding Portal (`/scan/[code]`)**: Dedicated landing portal auto-detecting the visiting player's operating system (Windows vs macOS), displaying assigned token credentials, and providing binary downloads.
+- [x] **Native OS Release Packages (.dmg & .exe)**: Native Apple `hdiutil` generated `.dmg` disk image (`DetectHub-Agent.app`) for macOS and native `.exe` desktop installer setup package for Windows.
+- [x] **App Translocation & CORS Bypass Local HTTP Engine**: Embedded background `http://localhost:1420` runner service bypassing `file://` CORS policies and macOS App Translocation isolation.
+- [x] **Live System Telemetry Collector (`realScanner.ts`)**: Forensic telemetry collector querying real host OS build (macOS Sonoma / Windows 11), hardware CPU cores, memory size, hostnames, and live running processes.
+- [x] **Live Web SaaS Telemetry API (`/api/v1/scan/upload`)**: Instant payload upload handler with CORS preflight support, indexing desktop agent scans directly into the Web Dashboard.
+- [x] **Dynamic 24-Hour Dashboard Trend Chart**: Intraday scan volume and anomaly chart dynamically calculating hourly telemetry frequencies from live indexed reports.
+- [x] **Forensic Report Export ("Export PDF Payload")**: Printable forensic PDF payload export functionality on the single report detail inspector (`/reports/[id]`).
+- [x] **Automated Risk Engine & DetectAI Analyst**: 0-100 risk scoring algorithm evaluating unsigned drivers (+40), memory injection (+80), Defender suspension (+50), and VM hypervisors (+35) with natural language summaries.
 
 ---
 
-### 🚀 Gelecek Yol Haritası / Yapılacaklar (Future Production Roadmap)
+### 🚀 Future Production Roadmap
 
-- [ ] **Production PostgreSQL / Supabase Veritabanı Bağlantısı**: Prisma ORM ile `DATABASE_URL` kalıcı canlı veritabanı sürücüsü entegrasyonu.
-- [ ] **Dinamik API Sunucu URL Yapılandırması**: Canlı domaine geçişte `NEXT_PUBLIC_API_URL` çevre değişkeni yönetimi ve Masaüstü Ajanı canlı sunucu IP/Domain yapılandırması.
-- [ ] **Üretim Sürümü Bulut Paket Dağıtımı**: İndirme dosyalarının Cloudflare R2 / AWS S3 veya GitHub Releases üzerinden yüksek indirme hızıyla sunulması.
-- [ ] **Kurumlar ve Bilgisayarlar Sayfalarının Canlı Veritabanı Bağlantıları**: `/organizations` ve `/computers` modüllerinin doğrudan DB nesnelerine bağlanması.
-- [ ] **Apple Developer ID & Microsoft Code Signing Sertifikasyon Süreçleri**: Canlı dağıtımda Gatekeeper ve SmartScreen uyarılarını tamamen ortadan kaldıracak dijital Kod İmzalama (Code Signing) sertifikasyonu.
+- [ ] **Production PostgreSQL / Supabase DB Persistence**: Prisma ORM connection for persistent database storage via `DATABASE_URL`.
+- [ ] **Dynamic API Server URL Configuration**: Production environment variable management (`NEXT_PUBLIC_API_URL`) and Desktop Agent dynamic backend server URL resolution.
+- [ ] **Production Cloud Release Hosting**: Release binary distribution (.dmg & .exe) hosted via Cloudflare R2 / AWS S3 or GitHub Releases.
+- [ ] **Live Database Binding for Secondary Pages**: Live database bindings for Organizations (`/organizations`) and Computers (`/computers`) modules.
+- [ ] **Apple Developer ID & Microsoft Code Signing Certification**: Code Signing digital certificate deployment to bypass macOS Gatekeeper and Windows SmartScreen prompts in production.
 
 ---
 
