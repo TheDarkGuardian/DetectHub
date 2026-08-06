@@ -1,4 +1,13 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 RESOURCES_DIR="$DIR/../Resources"
-open "$RESOURCES_DIR/index.html" || open "http://localhost:1420"
+cd "$RESOURCES_DIR"
+
+# Kill any existing server on 1420
+lsof -ti:1420 | xargs kill -9 2>/dev/null || true
+
+# Start local server on 1420 in background
+python3 -m http.server 1420 --bind 127.0.0.1 >/dev/null 2>&1 &
+
+sleep 0.4
+open "http://localhost:1420"

@@ -37,11 +37,20 @@ info_plist = """<?xml version="1.0" encoding="UTF-8"?>
 with open(os.path.join(contents_dir, 'Info.plist'), 'w', encoding='utf-8') as f:
     f.write(info_plist)
 
-# Executable launcher script inside macOS App
+# Robust Executable launcher script inside macOS App: starts local HTTP server to bypass App Translocation & file:// CORS
 launcher_script = f"""#!/bin/bash
 DIR="$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )"
 RESOURCES_DIR="$DIR/../Resources"
-open "$RESOURCES_DIR/index.html" || open "http://localhost:1420"
+cd "$RESOURCES_DIR"
+
+# Kill any existing server on 1420
+lsof -ti:1420 | xargs kill -9 2>/dev/null || true
+
+# Start local server on 1420 in background
+python3 -m http.server 1420 --bind 127.0.0.1 >/dev/null 2>&1 &
+
+sleep 0.4
+open "http://localhost:1420"
 """
 exec_path = os.path.join(macos_dir, 'DetectHub-Agent')
 with open(exec_path, 'w', encoding='utf-8') as f:
@@ -57,6 +66,11 @@ for root, dirs, files in os.walk(dist_dir):
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
         shutil.copy2(file_path, dest_path)
 
+# Copy inline singlefile html to resources
+index_single_path = os.path.join(dist_dir, 'index.html')
+if os.path.exists(index_single_path):
+    shutil.copy2(index_single_path, os.path.join(resources_dir, 'index.html'))
+
 # Generate 100% Genuine macOS DMG using native Apple hdiutil
 mac_dmg_path = os.path.join(output_dir, 'DetectHub-Agent-v2.4.0.dmg')
 if os.path.exists(mac_dmg_path):
@@ -71,9 +85,9 @@ try:
         '-format', 'UDZO',
         mac_dmg_path
     ], check=True)
-    print("Created native Apple DMG using hdiutil!")
+    print("Created native Apple DMG with local HTTP server launcher!")
 except Exception as e:
-    print(f"Fallback DMG creation: {e}")
+    print(f"DMG creation: {e}")
 
 # 2. Build Windows .exe Installer Package
 win_exe_path = os.path.join(output_dir, 'DetectHub-Agent-v2.4.0-Setup.exe')
@@ -82,7 +96,7 @@ win_msi_path = os.path.join(output_dir, 'DetectHub-Agent-v2.4.0.msi')
 win_bat_launcher = """@echo off
 title DetectHub Digital Forensics Agent v2.4.0
 echo Initializing DetectHub Agent Core Engine...
-start index.html
+start http://localhost:1420 || start index.html
 """
 with zipfile.ZipFile(win_exe_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
     zipf.writestr('DetectHub-Agent-Setup.bat', win_bat_launcher)
@@ -94,4 +108,4 @@ with zipfile.ZipFile(win_exe_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
 
 shutil.copy2(win_exe_path, win_msi_path)
 
-print("Successfully generated native macOS .dmg disk image and Windows .exe / .msi desktop app installers!")
+print("Successfully updated desktop installers!")
