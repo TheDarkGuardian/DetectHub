@@ -1,0 +1,22 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# next.js build
+.next/
+out/
+build/
+dist/
+
+# tauri & cargo
+src-tauri/target/
+
+# env files
+.env
+.env.local
+*.log
+
+# IDE
+.DS_Store
+.vscode
+.idea

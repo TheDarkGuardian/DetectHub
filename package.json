@@ -1,0 +1,13 @@
+{
+  "name": "detecthub",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "dev:agent": "npm --prefix apps/agent run tauri dev",
+    "build:agent": "npm --prefix apps/agent run tauri build"
+  }
+}
