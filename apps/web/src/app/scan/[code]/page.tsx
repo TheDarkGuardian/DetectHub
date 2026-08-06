@@ -32,9 +32,14 @@ export default function PublicScanPage() {
 
   const handleDownload = () => {
     setDownloadStarted(true);
-    // Simulate downloading the OS-specific binary
-    const filename = detectedOs === 'mac' ? 'DetectHub-Agent-v2.4.0.dmg' : 'DetectHub-Agent-v2.4.0.msi';
-    alert(`Downloading ${filename} for your ${detectedOs.toUpperCase()} computer.\n\nYour Pairing Code: ${codeParam}`);
+    // Trigger real file download from backend API endpoint
+    const downloadUrl = `/api/v1/download/agent?os=${detectedOs}`;
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = detectedOs === 'mac' ? 'DetectHub-Agent-v2.4.0.dmg' : 'DetectHub-Agent-v2.4.0.msi';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
