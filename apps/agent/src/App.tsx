@@ -16,6 +16,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+import { collectRealSystemTelemetry } from './lib/realScanner';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'scan' | 'upload' | 'history' | 'logs' | 'settings'>('home');
   const [inviteCode, setInviteCode] = useState('DETECT-8921-X992');
@@ -52,58 +54,19 @@ export default function App() {
     }
 
     try {
-      setLogs((prev) => [...prev, '[HTTP] Dispatching AES-256 encrypted payload to https://api.detecthub.io/v1/scan/upload...']);
-      
+      setLogs((prev) => [...prev, '[HTTP] Querying real system telemetry & hardware specs...']);
+      const realTelemetry = await collectRealSystemTelemetry();
+
       const payload = {
         inviteCode,
-        username: 'Live_Desktop_User',
-        pcName: 'DESKTOP-AGENT-PC',
-        systemInfo: {
-          computerName: 'DESKTOP-AGENT-PC',
-          domain: 'WORKGROUP',
-          username: 'Live_Desktop_User',
-          osVersion: 'Windows 11 Pro 23H2 (Build 22631)',
-          osBuild: '22631.3880',
-          architecture: 'x64-based PC',
-          bootTime: new Date().toISOString(),
-          uptime: '3h 42m',
-          biosVendor: 'ASUSTeK COMPUTER INC.',
-          motherboardSerial: 'MB-991823901',
-          tpmEnabled: true,
-          secureBootEnabled: true,
-          virtualizationEnabled: false
-        },
-        hardware: {
-          cpuName: 'AMD Ryzen 7 7800X3D 8-Core Processor',
-          cpuCores: 8,
-          cpuThreads: 16,
-          totalRamGb: 32,
-          ramSpeedMhz: 6000,
-          gpuName: 'NVIDIA GeForce RTX 4080 SUPER',
-          gpuVramGb: 16,
-          disks: [{ device: 'Disk 0 (C:)', model: 'Samsung SSD 990 PRO 2TB', serial: 'S71VNJ0W819230', sizeGb: 2000, type: 'NVMe SSD' }]
-        },
-        artifacts: {
-          processes: [
-            { id: 'p-1', name: 'explorer.exe', pid: 1204, ppid: 988, path: 'C:\\Windows\\explorer.exe', isSigned: true, publisher: 'Microsoft Windows', status: 'Clean', severity: 'SAFE' },
-            { id: 'p-2', name: 'cheatengine-x86_64.exe', pid: 8412, ppid: 1204, path: 'C:\\Users\\Temp\\cheatengine-x86_64.exe', isSigned: false, publisher: 'Unsigned', status: 'Flagged', severity: 'CRITICAL' }
-          ],
-          drivers: [
-            { id: 'd-1', name: 'nvlddmkm.sys', displayName: 'NVIDIA Driver', path: 'C:\\Windows\\System32\\drivers\\nvlddmkm.sys', isSigned: true, publisher: 'NVIDIA', status: 'Clean', severity: 'SAFE' },
-            { id: 'd-2', name: 'memrw64.sys', displayName: 'Direct RW Driver', path: 'C:\\Windows\\System32\\drivers\\memrw64.sys', isSigned: false, publisher: 'Unsigned', status: 'Flagged', severity: 'HIGH' }
-          ],
-          defenderStatus: {
-            antivirusEnabled: true,
-            realtimeProtectionEnabled: false,
-            tamperProtectionEnabled: true,
-            behaviorMonitoringEnabled: false,
-            cloudProtectionEnabled: true,
-            definitionsVersion: '1.415.290.0',
-            lastScanTime: new Date().toISOString(),
-            activeThreatsCount: 0
-          }
-        }
+        username: realTelemetry.username,
+        pcName: realTelemetry.pcName,
+        systemInfo: realTelemetry.systemInfo,
+        hardware: realTelemetry.hardware,
+        artifacts: realTelemetry.artifacts
       };
+
+      setLogs((prev) => [...prev, `[HTTP] Dispatching AES-256 encrypted payload for ${realTelemetry.pcName} (${realTelemetry.systemInfo.osVersion})...`]);
 
       const res = await fetch('http://localhost:3000/api/v1/scan/upload', {
         method: 'POST',
